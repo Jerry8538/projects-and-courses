@@ -1,0 +1,231 @@
+(* extra practice problems *)
+
+(* 1 *)
+fun alternate (ints : int list) =
+    let
+	fun helper (ints : int list, lca : string, ssf : int) =
+	    (* lca is a lost-context acc, either "add" or "sub"
+	       ssf is the sum so far *)
+	    if null ints
+	    then ssf
+	    else
+		if lca = "add"
+		then helper (tl ints, "sub", ssf + hd ints)
+		else helper (tl ints, "add", ssf - hd ints)
+    in
+	helper (ints, "add", 0)
+    end;
+	
+(* 2 *)
+fun min_max (ints : int list) =
+    (* ASSUME: ints are non empty *)
+    if null (tl ints)
+    then (hd ints, hd ints)
+    else
+	let
+	    val tl_ans = min_max(tl ints)
+	in
+	    (* if higher than highest *)
+	    if hd ints > #2 tl_ans
+	    then (#1 tl_ans, hd ints)
+	    else
+		(* if lower than lowest *)
+		if hd ints < #1 tl_ans
+		then (hd ints, #2 tl_ans)
+		(* neither lowest nor highest *)			 
+		else tl_ans
+	end
+
+(* 3 *)
+fun cumsum (ints : int list) =
+    if null ints
+    then []
+    else
+	let
+	    fun helper (ints : int list, ssf : int, lsf : int list) =
+		(* ssf is the sum so far
+		   lsf is the list so far
+		   ints are non-empty at first *)
+		if null ints
+		then lsf
+		else
+		    let val cursum = hd ints + ssf
+		    in helper (tl ints, cursum, cursum :: lsf)
+		    end
+	in
+	    helper (ints, 0, [])
+	end
+			
+(* 4 *)
+fun greeting (name : string option) =
+    if isSome name
+    then "Hello there, " ^ (valOf name) ^ "!"
+    else "Hello there, you!"
+	     
+(* 5 *)
+fun repeat (ints : int list, counts : int list) =
+    (* ints and counts have same length *)
+    if null ints
+    then []
+    else
+	let
+	    fun repeatOne (n : int, c : int) =
+		if c = 0
+		then []
+		else n :: repeatOne (n, c-1)
+	in
+	    repeatOne (hd ints, hd counts) @ repeat (tl ints, tl counts)
+	end
+
+(* 6 *)
+fun addOpt (opt1 : int option, opt2 : int option) =
+    if isSome opt1 andalso isSome opt2
+    then SOME ((valOf opt1) + (valOf opt2))
+    else NONE
+
+(* 7 *)
+fun addAllOpt (intOpts : int option list) =
+    let
+	fun helper (intOpts : int option list, ssf : int option) =
+	    (* we need to see if there are any SOMEs
+		   so we initialize ssf as NONE *)
+	    (* can't just check if ssf is 0 at the end, since 1 + ~1 = 0, for example *)
+	    if null intOpts
+	    then ssf
+	    else
+		(* we don't wanna change ssf unless we get a SOME *)
+		if isSome (hd intOpts)
+		then if ssf = NONE
+		     (* update ssf *)
+		     then helper (tl intOpts, hd intOpts)
+		     else helper (tl intOpts,
+				  SOME (valOf (hd intOpts) + (valOf ssf)))
+		(* if hd intOpts is NONE *)
+		else helper (tl intOpts, ssf)
+    in
+	helper (intOpts, NONE)
+    end
+
+(* 8 *)
+fun any (bools : bool list) =
+    if null bools
+    then false
+    else hd bools orelse any (tl bools)
+
+(* 9 *)
+fun all (bools : bool list) =
+    if null bools
+    then true
+    else hd bools andalso all (tl bools)
+
+(* 10 *)
+fun zip (ints1 : int list, ints2 : int list) =
+    (* lists don't have to be equal length *)
+    if null ints1 orelse null ints2
+    then []
+    else (hd ints1, hd ints2) :: zip (tl ints1, tl ints2)
+
+(* 11 *)
+fun zipRecycle (ints1 : int list, ints2 : int list) =
+    (* initially both must be non-empty *)
+    if null ints1 orelse null ints2
+    then []
+    else
+	let
+	    val INTS1 = ints1
+	    val INTS2 = ints2
+			    
+	    fun longer (ints1 : int list, ints2 : int list) =
+		(* true if ints1 is longer than ints2 *)
+		if null ints1
+		then false
+		else
+		    if null ints2
+		    then true
+		    else longer (tl ints1, tl ints2)
+				
+	    fun zipper (ints1 : int list, ints2 : int list, oneortwo : bool) =
+		if oneortwo
+		then
+		    (* ints1 is longer *)
+		    if null ints1
+		    then []
+		    else
+			if null ints2
+				(* when ints2 gets over, start it again *)
+			then zipper (ints1, INTS2, oneortwo)
+			else (hd ints1, hd ints2) :: zipper (tl ints1, tl ints2, oneortwo)
+		else
+		    (* ints2 is longer *)
+		    if null ints2
+		    then []
+		    else
+			if null ints1
+				(* when ints1 gets over, start it again *)
+			then zipper (INTS1, ints2, oneortwo)
+			else (hd ints1, hd ints2) :: zipper (tl ints1, tl ints2, oneortwo)
+		
+	in zipper (ints1, ints2, longer (ints1, ints2))
+	end
+
+fun zipRecycle2 (list1 : int list, list2 : int list) =
+    if null list1 orelse null list2
+    then []
+    else
+	let
+	    fun helper (sub1 : int list, sub2 : int list, end1 : bool, end2 : bool) =
+		if end1 andalso end2
+		then []
+			 
+		else if null sub1
+		then helper (list1, sub2, true, end2)
+			    
+		else if null sub2
+		then helper (sub1, list2, end1, true)
+			    
+		else (hd sub1, hd sub2) :: helper (tl sub1, tl sub2, end1, end2)
+	in
+	    helper (list1, list2, false, false)
+	end
+	    
+(* 12 *)
+fun zipOpt (list1 : int list, list2 : int list) =
+    let
+	fun helper (list1:int list, list2:int list, rsf:(int*int) list) =
+	    (* when both end at same time, i.e. same length *)
+	    if null list1 andalso null list2
+	    then SOME rsf
+	    (* when one ends before the other *)
+	    else if null list1 orelse null list2
+	    then NONE
+	    (* else put the tuple at end of rsf *)
+	    else helper (tl list1, tl list2, rsf @ [(hd list1, hd list2)])
+    in
+	helper (list1, list2, [])
+    end
+		
+(* 13 *)
+fun lookup (pairs:(string*int) list, s2:string) =
+    if null pairs
+    then NONE
+
+    else if #1 (hd pairs) = s2
+    then SOME (#2 (hd pairs))
+
+    else lookup (tl pairs, s2)
+
+(* 14 *)
+fun splitup (mixed:int list) =
+    if null mixed
+    then ([],[])
+
+    else let val tl_ans = splitup (tl mixed)
+	 in
+	     if hd mixed > 0 
+	     then (hd mixed :: (#1 tl_ans), #2 tl_ans)
+				  
+	     else (#1 tl_ans, hd mixed :: (#2 tl_ans))
+	 end
+
+(* 15 *)
+	fun splitAt (     

@@ -1,0 +1,143 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname cantor-starter) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+
+(require 2htdp/image)
+(require 2htdp/universe)
+
+;; cantor-starter.rkt
+
+; 
+; PROBLEM:
+; 
+; A Cantor Set is another fractal with a nice simple geometry.
+; The idea of a Cantor set is to have a bar (or rectangle) of
+; a certain width w, then below that are two recursive calls each
+; of 1/3 the width, separated by a whitespace of 1/3 the width.
+; 
+; So this means that the
+;   width of the whitespace   wc  is  (/ w 3)
+;   width of recursive calls  wr  is  (/ (- w wc) 2)
+;   
+; To make it look better a little extra whitespace is put between
+; the bars.
+; 
+; 
+; Here are a couple of examples (assuming a reasonable CUTOFF)
+; 
+; (cantor CUTOFF) produces:
+; 
+; .
+; 
+; (cantor (* CUTOFF 3)) produces:
+; 
+; .
+; 
+; And that keeps building up to something like the following. So
+; as it goes it gets wider and taller of course.
+; 
+; .
+; 
+; 
+; PROBLEM A:
+; 
+; Design a function that consumes a width and produces a cantor set of 
+; the given width.
+; 
+; 
+; PROBLEM B:
+; 
+; Add a second parameter to your function that controls the percentage 
+; of the recursive call that is white each time. Calling your new function
+; with a second argument of 1/3 would produce the same images as the old 
+; function.
+; 
+; PROBLEM C:
+; 
+; Now you can make a fun world program that works this way:
+;   The world state should simply be the most recent x coordinate of the mouse.
+;   
+;   The to-draw handler should just call your new cantor function with the
+;   width of your MTS as its first argument and the last x coordinate of
+;   the mouse divided by that width as its second argument.
+;   
+; 
+; 
+
+
+
+;; Constants
+(define H-BLUE 20)
+(define H-WHITE 10)
+(define CUTOFF 5)
+
+;; Natural -> Image
+;; Produces a Cantor Set of width w with given ratio of MTSPACE to subs
+
+
+(check-expect (cantor CUTOFF 1/3) (rectangle CUTOFF H-BLUE "solid" "blue"))
+(check-expect (cantor (* CUTOFF 3) 1/2) (above (rectangle (* CUTOFF 3) H-BLUE "solid" "blue")
+                                           (rectangle (* CUTOFF 3) H-WHITE "solid" "white")
+                                           (beside (rectangle (* 1/4 (* CUTOFF 3)) H-BLUE "solid" "blue")
+                                                   (rectangle (* 1/2 (* CUTOFF 3)) H-BLUE "solid" "black")
+                                                   (rectangle (* 1/4 (* CUTOFF 3)) H-BLUE "solid" "blue"))))
+
+(define (cantor w mtr)
+  (cond [(<= w CUTOFF) (rectangle w H-BLUE "solid" "blue")]
+        [(< mtr 0) (rectangle CUTOFF H-BLUE "solid" "blue")]
+        [else
+         (local [(define SUB (cantor (/ (- w (* w mtr)) 2) mtr))]
+           (above (rectangle w H-BLUE "solid" "blue")
+                  (rectangle w H-WHITE "solid" "white")
+                  (beside SUB (rectangle (* w mtr) H-BLUE "solid" "black") SUB)))]))
+
+
+;; The Cantor Set animated
+
+;;===============
+;; Constants
+
+(define MTS (rectangle 1280 720 "solid" "black"))
+
+;;===============
+;; Data Definitions
+
+;; MouseX is Natural[0,(width MTS)]
+;; interp. as the current X coordinate of mouse on MTS
+
+(define mx1 50)
+(define mx2 1000)
+#;
+(define (fn-for-mx mx)
+  (... mx))
+
+;;===============
+;; Functions
+
+;; MouseX -> MouseX
+;; Start the animation by evaluating (main (image-width MTS))
+
+(define (main mx)
+  (big-bang mx
+    (to-draw render-cantor) ;; MouseX -> Image
+    (on-mouse update-mx)))  ;; MouseX Natural Natural MouseEvent -> MouseX
+
+;; MouseX -> Image
+;; Calls cantor with (width MTS) and (/ mx (width MTS))
+
+(check-expect (render-cantor 1280) (overlay/align "left" "top" (cantor 1280 1) MTS))
+(check-expect (render-cantor 640) (overlay/align "left" "top" (cantor 1280 (/ 640 1280)) MTS))
+
+(define (render-cantor mx)
+  (overlay/align "left" "top" (cantor (image-width MTS) (/ mx (image-width MTS))) MTS))
+
+;; MouseX Natural Natural MouseEvent -> MouseX
+;; Returns the mouse's current x pos as long as it is within MTS
+
+(check-expect (update-mx 10 -100 50 "move") 10)
+(check-expect (update-mx 100 500 20 "button-down") 500)
+
+(define (update-mx mx x y me)
+  (cond [(< x 0) mx]
+        [(> x (image-width MTS)) mx]
+        {else x}))

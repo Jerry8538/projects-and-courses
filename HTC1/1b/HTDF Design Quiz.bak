@@ -1,0 +1,113 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname |HTDF Design Quiz|) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+(require 2htdp/image)
+
+;; Image Image -> Boolean
+;; Finds the area of the 2 input images and compares, true if first is greater, false otherwise
+
+;(define (compare-img img1 img2) false)    ;stub
+
+;
+(check-expect
+ (compare-img
+  (square 10 "solid" "white") (square 1 "solid" "white"))
+ true)
+
+(check-expect
+ (compare-img
+  (rectangle 15 10 "solid" "white") (circle 10 "solid" "white"))
+ false)
+
+(check-expect
+ (compare-img
+  (square 10 "solid" "white") (square 10 "solid" "white"))
+ true)
+
+;(define (compare-img img1 img2)
+;  (... img1 img2))
+
+
+(define (compare-img img1 img2)
+  (if (> (area-helper img1) (area-helper img2))
+      true
+      (= (area-helper img1) (area-helper img2))))
+
+
+;;; Area Helper Function
+
+;;Image -> Number
+;;Returns the area of the image
+
+;(define (area-helper img) 0)   ;stub
+
+(check-expect
+ (area-helper (square 10 "solid" "white"))
+ 100)
+(check-within
+ (area-helper (circle 10 "solid" "white"))
+ 314.16 1)
+(check-expect
+ (area-helper (rectangle 10 15 "solid" "white"))
+ 150)
+(check-expect
+ (area-helper (triangle 10 "solid" "white"))
+ 45)
+
+;(define (area-helper img)
+;  (... img)
+
+;defining variables
+(define (h img) (image-height img))
+(define (w img) (image-width img))
+(define m "solid")
+(define c "white")
+
+(define (area-helper img)
+
+  ;square
+  (if
+   (equal? img (square (h img) m c))
+   (sqr (h img))
+   (area-helper2 img)
+   )
+  )
+
+(define (area-helper2 img)
+  ;rectangle
+  (if
+   (equal? img (rectangle (w img) (h img) m c))
+   (* (w img) (h img))
+   (area-helper3 img)
+   )
+  )
+
+(define (area-helper3 img)
+  
+  ;circle 
+  (if
+   (equal? img (circle (* 0.5 (w img)) m c))
+   (* pi (sqr (* 0.5 (w img))))
+   (area-helper4 img)
+   )
+  )
+
+(define (area-helper4 img)
+  ;triangle
+  (if
+   (equal? img (triangle (w img) m c))
+   (* 0.5 (w img) (h img))
+   "No matches"
+   )
+  )
+
+
+
+
+
+
+
+
+
+
+

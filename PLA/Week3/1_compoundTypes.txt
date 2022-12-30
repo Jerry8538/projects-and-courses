@@ -1,0 +1,20 @@
+3 main ways of building compound types in any language ->
+    Each of: t contains each of t1, t2... tn
+    One of: t contains one of t1, t2... tn
+    Self reference: t contains t
+
+Lists use all three -
+An int list is *either* null *or* both int and a smaller list
+               ----------------------------------------------
+                 |                ---------------------------
+              One of                 |           ------------
+                                 Each of               |
+                                                  Self ref.
+
+Int options either contain an int or are NONE - One of
+
+And we can nest compound data types arbitrarily too!
+
+Another way to build each of types in ml - Records
+
+Java and other OOP languages also have one-of types; the polar opposite of ml
