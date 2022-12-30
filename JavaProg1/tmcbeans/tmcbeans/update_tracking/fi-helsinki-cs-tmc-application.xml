@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><module codename="fi.helsinki.cs.tmc.application">
-    <module_version install_time="1578573751352" last="true" origin="installer" specification_version="1.0">
-        <file crc="3769529560" name="config/Modules/fi-helsinki-cs-tmc-application.xml"/>
-        <file crc="1198819262" name="modules/fi-helsinki-cs-tmc-application.jar"/>
-    </module_version>
-</module>
