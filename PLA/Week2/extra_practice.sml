@@ -15,7 +15,7 @@ fun alternate (ints : int list) =
     in
 	helper (ints, "add", 0)
     end;
-	
+
 (* 2 *)
 fun min_max (ints : int list) =
     (* ASSUME: ints are non empty *)
@@ -32,7 +32,7 @@ fun min_max (ints : int list) =
 		(* if lower than lowest *)
 		if hd ints < #1 tl_ans
 		then (hd ints, #2 tl_ans)
-		(* neither lowest nor highest *)			 
+		(* neither lowest nor highest *)
 		else tl_ans
 	end
 
@@ -55,13 +55,13 @@ fun cumsum (ints : int list) =
 	in
 	    helper (ints, 0, [])
 	end
-			
+
 (* 4 *)
 fun greeting (name : string option) =
     if isSome name
     then "Hello there, " ^ (valOf name) ^ "!"
     else "Hello there, you!"
-	     
+
 (* 5 *)
 fun repeat (ints : int list, counts : int list) =
     (* ints and counts have same length *)
@@ -134,7 +134,7 @@ fun zipRecycle (ints1 : int list, ints2 : int list) =
 	let
 	    val INTS1 = ints1
 	    val INTS2 = ints2
-			    
+
 	    fun longer (ints1 : int list, ints2 : int list) =
 		(* true if ints1 is longer than ints2 *)
 		if null ints1
@@ -143,28 +143,28 @@ fun zipRecycle (ints1 : int list, ints2 : int list) =
 		    if null ints2
 		    then true
 		    else longer (tl ints1, tl ints2)
-				
+
 	    fun zipper (ints1 : int list, ints2 : int list, oneortwo : bool) =
-		if oneortwo
-		then
-		    (* ints1 is longer *)
-		    if null ints1
-		    then []
-		    else
-			if null ints2
-				(* when ints2 gets over, start it again *)
-			then zipper (ints1, INTS2, oneortwo)
-			else (hd ints1, hd ints2) :: zipper (tl ints1, tl ints2, oneortwo)
-		else
-		    (* ints2 is longer *)
-		    if null ints2
-		    then []
-		    else
-			if null ints1
-				(* when ints1 gets over, start it again *)
-			then zipper (INTS1, ints2, oneortwo)
-			else (hd ints1, hd ints2) :: zipper (tl ints1, tl ints2, oneortwo)
-		
+		      if oneortwo
+		      then
+		          (* ints1 is longer *)
+		          if null ints1
+		          then []
+		          else
+			            if null ints2
+				                  (* when ints2 gets over, start it again *)
+			            then zipper (ints1, INTS2, oneortwo)
+			            else (hd ints1, hd ints2) :: zipper (tl ints1, tl ints2, oneortwo)
+		      else
+		          (* ints2 is longer *)
+		          if null ints2
+		          then []
+		          else
+			            if null ints1
+				                  (* when ints1 gets over, start it again *)
+			            then zipper (INTS1, ints2, oneortwo)
+			            else (hd ints1, hd ints2) :: zipper (tl ints1, tl ints2, oneortwo)
+
 	in zipper (ints1, ints2, longer (ints1, ints2))
 	end
 
@@ -405,8 +405,8 @@ fun all_products (factors:(int*int) list) : int list =
         val FACTORLIST = map #1 factors
 
         fun genConfigs (t:int, prevConfig:(int list) list) : (int list) list =
-            (* t is number of terms in config *)
-            (* prevConfig can be used as the config generated for t-1 terms *)
+            (* t is number of terms in config, initially 1 *)
+            (* prevConfig can be used as the config generated for t-1 terms, initially [] *)
 
             if t > MAXTERMS
             then []

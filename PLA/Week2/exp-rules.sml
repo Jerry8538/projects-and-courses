@@ -1,5 +1,5 @@
 val abs_of_5 = if 5 < 0
-	       then 0 - 5 else 5;
+	             then 0 - 5 else 5;
 
 (* If expression -
 
