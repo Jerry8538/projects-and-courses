@@ -4,5 +4,5 @@ JavaProg1/tmcbeans
 #Ignore MyBestWork
 MyBestWork
 
-#Ignore the textbooks of notesFinder
-notesFinder/files
+#Ignore the files of studentAssistant
+studentAssistant/files
