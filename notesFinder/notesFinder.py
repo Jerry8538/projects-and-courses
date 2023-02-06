@@ -13,7 +13,7 @@ def removeFiles():
     for f in FILES:
         os.remove(OUTPUT + f'/{f}.pdf')
 
-# goes until file opened, then goes until done
+# goes until file opened
 while True:
     sub = input('Enter subject: ')
     chap = input('Enter chapter: ')
@@ -25,7 +25,7 @@ while True:
         continue
     break
 
-    #valid file has been moved
+# goes until done
 while True:
     if input('Done? ') == 'yes':
         try:
